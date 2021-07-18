@@ -142,7 +142,7 @@ const activeUser = async (req: Request, res: Response, active_token: string) => 
 
   await user.save()
 
-  res.json({msg: "Account has been activated!"})
+  res.status(200).json({msg: "Account has been activated!"})
 }
 
 export default authCtrl;

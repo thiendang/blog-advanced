@@ -6,7 +6,6 @@ import { IUserLogin, IUserRegister } from '../../utils/TypeScript'
 import { postAPI } from '../../utils/FetchData'
 import { validRegister } from '../../utils/Valid'
 
-
 export const login = (userLogin: IUserLogin) => 
 async (dispatch: Dispatch<IAuthType | IAlertType>) => {
   try {
@@ -14,13 +13,7 @@ async (dispatch: Dispatch<IAuthType | IAlertType>) => {
 
     const res = await postAPI('login', userLogin)
 
-    dispatch({
-      type: AUTH,
-      payload: {
-        token: res.data.access_token,
-        user: res.data.user
-      }
-    })
+    dispatch({ type: AUTH, payload: res.data })
 
     dispatch({ type: ALERT, payload: { success: res.data.msg } })
     
@@ -30,7 +23,7 @@ async (dispatch: Dispatch<IAuthType | IAlertType>) => {
 }
 
 
-export const register = (userRegister: IUserRegister) => 
+export const register = (userRegister: IUserRegister, callback: any) => 
 async (dispatch: Dispatch<IAuthType | IAlertType>) => {
   const check = validRegister(userRegister)
   
@@ -42,8 +35,14 @@ async (dispatch: Dispatch<IAuthType | IAlertType>) => {
     
     const res = await postAPI('register', userRegister)
 
-    dispatch({ type: ALERT, payload: { success: res.data.msg } })
+    if (res.status === 200) {
+      dispatch({ type: ALERT, payload: { success: res.data.msg } })
+      callback()
+    }
+    return false
+    
   } catch (err: any) {
+    console.log(err)
     dispatch({ type: ALERT, payload: { errors: err.response.data.msg } })
   }
 }

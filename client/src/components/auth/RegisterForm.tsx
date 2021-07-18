@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useHistory } from "react-router-dom"
 
 import { InputChange, FormSubmit } from '../../utils/TypeScript'
 import { register } from '../../redux/actions/authAction'
 
-
 const RegisterForm = () => {
+
+  let history = useHistory()
 
   const initialState = { 
     name: '', account: '', password: '', cf_password: '' 
@@ -23,9 +25,15 @@ const RegisterForm = () => {
     setUserRegister({...userRegister, [name]:value})
   }
 
+  const redirectLogin = () => {
+    setTimeout(() => {
+      history.push("/login")
+    }, 1000);
+  }
+
   const handleSubmit = (e: FormSubmit) => {
     e.preventDefault()
-    dispatch(register(userRegister))
+    dispatch(register(userRegister, redirectLogin))
   }
 
   return (
