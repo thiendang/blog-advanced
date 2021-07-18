@@ -26,14 +26,16 @@ const authCtrl = {
 
       const url = `${CLIENT_URL}/active/${active_token}`
 
-      if (validateEmail(account)) {
-        sendMail(account, url, "Verify your email address")
-        return res.json({ msg: "Success! Please check your email." })
+      // if (validateEmail(account)) {
+      //   sendMail(account, url, "Verify your email address")
+      //   return res.json({ msg: "Success! Please check your email." })
 
-      } else if (validPhone(account)) {
-        sendSms(account, url, "Verify your phone number")
-        return res.json({ msg: "Success! Please check phone." })
-      }
+      // } else if (validPhone(account)) {
+      //   sendSms(account, url, "Verify your phone number")
+      //   return res.json({ msg: "Success! Please check phone." })
+      // }
+
+      activeUser(req, res, active_token)
 
     } catch (err) {
       return res.status(500).json({msg: err.message})
@@ -129,6 +131,18 @@ const loginUser = async (user: IUser, password: string, res: Response) => {
     user: { ...user._doc, password: '' }
   })
 
+}
+
+const activeUser = async (req: Request, res: Response, active_token: string) => {
+  const decoded = <IDecodedToken>jwt.verify(active_token, `${process.env.ACTIVE_TOKEN_SECRET}`)
+
+  const { newUser } = decoded 
+
+  const user = new Users(newUser)
+
+  await user.save()
+
+  res.json({msg: "Account has been activated!"})
 }
 
 export default authCtrl;
